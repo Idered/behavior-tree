@@ -22,14 +22,13 @@
   "devDependencies": {
     "@types/jest": "^24.0.21",
     "@types/react": "^16.9.11",
-    "@types/uuid": "^3.4.6",
     "autoprefixer": "^9.7.1",
     "cssnano": "^4.1.10",
     "react": "^16.11.0",
     "rollup-plugin-postcss": "^2.0.3",
     "tsdx": "^0.11.0",
     "tslib": "^1.10.0",
-    "typescript": "^3.9.0-beta"
+    "typescript": "^3.8.3"
   },
   "dependencies": {
     "immer": "^6.0.3",

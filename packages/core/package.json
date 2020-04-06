@@ -21,10 +21,9 @@
   "peerDependencies": {},
   "devDependencies": {
     "@types/jest": "^24.0.21",
-    "@types/uuid": "^3.4.6",
     "tsdx": "^0.11.0",
     "tslib": "^1.10.0",
-    "typescript": "^3.9.0-beta"
+    "typescript": "^3.8.3"
   },
   "dependencies": {
     "immer": "^6.0.3",
