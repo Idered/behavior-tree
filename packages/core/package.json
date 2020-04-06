@@ -1,0 +1,33 @@
+{
+  "name": "@behavior-tree/core",
+  "version": "0.1.0",
+  "license": "MIT",
+  "author": "Kasper Mikiewicz",
+  "main": "dist/index.js",
+  "module": "dist/core.esm.js",
+  "typings": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "prepare": "yarn build",
+    "start": "tsdx watch",
+    "build": "tsdx build",
+    "test": "tsdx test"
+  },
+  "peerDependencies": {},
+  "devDependencies": {
+    "@types/jest": "^24.0.21",
+    "@types/uuid": "^3.4.6",
+    "tsdx": "^0.11.0",
+    "tslib": "^1.10.0",
+    "typescript": "^3.9.0-beta"
+  },
+  "dependencies": {
+    "immer": "^6.0.3",
+    "nanoid": "^3.0.2"
+  }
+}

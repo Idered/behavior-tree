@@ -1,38 +1,23 @@
 {
-  "name": "@behavior-tree/core",
-  "version": "0.1.0",
-  "license": "MIT",
-  "author": "Kasper Mikiewicz",
-  "main": "dist/index.js",
-  "module": "dist/behavior-tree.esm.js",
-  "typings": "dist/index.d.ts",
-  "files": [
-    "dist"
+  "name": "@behavior-tree/repo",
+  "private": true,
+  "workspaces": [
+    "packages/*",
+    "packages/react/example"
   ],
-  "publishConfig": {
-    "access": "public"
-  },
-  "scripts": {
-    "start": "tsdx watch",
-    "build": "tsdx build",
-    "test": "tsdx test"
-  },
-  "peerDependencies": {},
   "prettier": {
-    "printWidth": 80,
     "bracketSpacing": false,
     "semi": false,
     "singleQuote": true,
     "trailingComma": "es5"
   },
-  "devDependencies": {
-    "@types/jest": "^24.0.19",
-    "@types/uuid": "^3.4.5",
-    "tsdx": "^0.10.5",
-    "tslib": "^1.10.0",
-    "typescript": "^3.6.4"
-  },
   "dependencies": {
-    "uuid": "^3.3.3"
+    "lerna": "^3.18.3"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^2.6.0",
+    "@typescript-eslint/parser": "^2.6.0",
+    "eslint": "^6.6.0",
+    "eslint-plugin-react": "^7.16.0"
   }
 }

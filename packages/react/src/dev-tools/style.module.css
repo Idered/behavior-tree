@@ -1,0 +1,98 @@
+.container {
+  display: grid;
+  grid-auto-flow: row;
+  grid-template-rows: auto 1fr;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  font-size: 12px;
+  background-color: #ebeff7;
+  text-align: left;
+  color: #4e6184;
+  /* padding: 8px 8px 8px 16px; */
+  font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  letter-spacing: 0.12px;
+  min-width: 300px;
+  z-index: 1000;
+  box-shadow: inset 2px 0 0 #a1aed6;
+}
+.select {
+  margin: 12px 12px 8px;
+  padding: 4px;
+  border: 1px solid #a1aed6;
+  line-height: 2rem;
+}
+.list {
+  overflow-y: scroll;
+  height: 100%;
+}
+.list::-webkit-scrollbar {
+  width: 4px;
+}
+.list::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.3);
+}
+.listItem {
+  margin-left: 12px;
+}
+.itemLabel {
+  padding: 4px 0 4px 4px;
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-columns: auto 1fr auto auto;
+  column-gap: 8px;
+  align-items: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.itemStatus {
+  width: 12px;
+  height: 12px;
+  border-radius: 8px;
+}
+.itemStatus.Success {
+  background-color: #4caf50;
+}
+.itemStatus.Running {
+  background-color: #ffc107;
+}
+.itemStatus.Failure {
+  background-color: #ff5722;
+}
+.itemStatus.Ready {
+  background-color: #a1aed6;
+}
+.counter {
+  padding: 0px 8px;
+  background: #cbd1de;
+  font-weight: bold;
+  text-align: center;
+  border-radius: 30px;
+  justify-self: flex-end;
+  font-size: 12px;
+}
+.labelIconQuestion {
+  color: #4caf50;
+}
+.labelIconAction {
+  color: #ff5722;
+}
+.labelIconSequence {
+  color: #009688;
+}
+.labelIconInvert {
+  color: #ffc107;
+}
+.labelIconSelector {
+  color: #b344a5;
+}
+.labelIconPortal {
+  color: #34aaef;
+}
+.labelIconState {
+  color: #4e6184;
+}
