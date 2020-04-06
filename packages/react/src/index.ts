@@ -1,5 +1,5 @@
 import {createContext, useContext, useState, useEffect, useMemo} from 'react'
-import {IRootNode, tick, NodeStatus} from '@behavior-tree/core'
+import {IRootNode, tick, NodeStatus} from '@btree/core'
 
 export {DevTools} from './dev-tools'
 import {DevToolsContext} from './dev-tools'

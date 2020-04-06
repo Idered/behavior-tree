@@ -2,24 +2,28 @@
 
 ## Behavior Tree Toolkit
 
-- [Core](packages/core/README.md) - Framework agnostic behavior trees implementation
-- [React](packages/react/README.md) - Hooks and docs how to use BT with React
+- 🌲 [@btree/core](packages/core) - Framework agnostic behavior trees implementation
+- ⚛ [@btree/react](packages/react) - Hooks and docs how to use BT with React
 
 ## Quick start
 
-> Check [Behavior Trees Documentation](packages/core/README.md) to learn the API.
+> Check [docs](packages/core/README.md) to learn the API.
+
+```sh
+npm install @btree/core
+```
 
 ```tsx
-import {nodes, tick} from '@behavior-tree/core'
+import {nodes, tick} from '@btree/core'
 
 const state = {
   isLoggedIn: false
 }
 
-const tree = nodes.root<typeof state>(
+const tree = nodes.root<typeof state>('App behavior', () =>
   nodes.selector([
     nodes.sequence([
-      nodes.conditional(({state}) => state.isLoggedIn)
+      nodes.conditional((state) => state.isLoggedIn)
       nodes.action('Redirect to dashboard', () => {
         navigate('/dashboard')
       }),
@@ -38,7 +42,3 @@ tick(tree, state)
 ## Authors
 
 - Kasper Mikiewicz ([@Idered](https://twitter.com/idered))
-
-## License
-
-The MIT License.

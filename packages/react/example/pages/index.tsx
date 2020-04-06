@@ -1,6 +1,6 @@
 import React, {useEffect} from 'react'
-import {nodes} from '@behavior-tree/core'
-import {DevTools, useTree} from '@behavior-tree/react'
+import {nodes} from '@btree/core'
+import {DevTools, useTree} from '@btree/react'
 
 const initialState = {
   isDragging: false,

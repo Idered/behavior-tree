@@ -1,11 +1,5 @@
 import * as React from 'react'
-import {
-  IAnyNode,
-  NodeStatus,
-  _StoreKey,
-  IRootNode,
-  NodeType,
-} from '@behavior-tree/core'
+import {IAnyNode, NodeStatus, _StoreKey, IRootNode, NodeType} from '@btree/core'
 import styles from './style.module.css'
 import {
   SequenceIcon,
