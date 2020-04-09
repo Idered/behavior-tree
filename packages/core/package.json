@@ -27,6 +27,6 @@
   },
   "dependencies": {
     "immer": "^6.0.3",
-    "nanoid": "^3.0.2"
+    "nanoid": "^2.0.0"
   }
 }
