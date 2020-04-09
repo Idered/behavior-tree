@@ -1,6 +1,6 @@
 {
   "name": "@btree/core",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "license": "MIT",
   "author": "Kasper Mikiewicz",
   "description": "JavaScript/TypeScript implementation of Behavior Trees.",
