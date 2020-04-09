@@ -3,6 +3,8 @@
   "eslint.enable": false,
   "typescript.tsdk": "node_modules\\typescript\\lib",
   "cSpell.words": [
-    "btree"
+    "btree",
+    "tickend",
+    "tickstart"
   ]
 }
