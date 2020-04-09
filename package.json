@@ -2,8 +2,7 @@
   "name": "@btree/repo",
   "private": true,
   "workspaces": [
-    "packages/*",
-    "packages/react/example"
+    "packages/*"
   ],
   "prettier": {
     "bracketSpacing": false,
