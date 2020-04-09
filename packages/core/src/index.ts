@@ -1,4 +1,4 @@
-import {nanoid} from 'nanoid'
+import nanoid from 'nanoid'
 import produce, {applyPatches, Patch, enablePatches, Draft} from 'immer'
 
 enablePatches()

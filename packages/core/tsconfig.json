@@ -4,6 +4,7 @@
     "target": "es5",
     "module": "esnext",
     "lib": ["dom", "esnext"],
+    "allowSyntheticDefaultImports": true,
     "importHelpers": true,
     "declaration": true,
     "sourceMap": true,
