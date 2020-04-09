@@ -2,6 +2,7 @@
   "name": "@btree/react",
   "version": "0.1.0",
   "license": "MIT",
+  "description": "React hooks and DevTools component used to visualize tree.",
   "author": "Kasper Mikiewicz",
   "main": "dist/index.js",
   "module": "dist/react.esm.js",
