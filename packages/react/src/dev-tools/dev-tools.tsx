@@ -81,7 +81,7 @@ const TreeNode: React.FC<TreeNodeProps> = ({node}) => {
           <Count>{node.getValue(_StoreKey.Count)}</Count>
           <Status status={node.getValue(_StoreKey.Status)} />
         </Label>
-        {node.children.map((item) => (
+        {node.children.map(item => (
           <TreeNode key={item.id} node={item} />
         ))}
       </Item>
@@ -96,7 +96,7 @@ const TreeNode: React.FC<TreeNodeProps> = ({node}) => {
           <Count>{node.getValue(_StoreKey.Count)}</Count>
           <Status status={node.getValue(_StoreKey.Status)} />
         </Label>
-        {node.children.map((item) => (
+        {node.children.map(item => (
           <TreeNode key={item.id} node={item} />
         ))}
       </Item>
@@ -114,7 +114,7 @@ const TreeNode: React.FC<TreeNodeProps> = ({node}) => {
           <Count>{node.getValue(_StoreKey.Count)}</Count>
           <Status status={node.getValue(_StoreKey.Status)} />
         </Label>
-        {node.children.map((item) => (
+        {node.children.map(item => (
           <TreeNode key={item.id} node={item} />
         ))}
       </Item>
@@ -207,7 +207,7 @@ const TreeNode: React.FC<TreeNodeProps> = ({node}) => {
           <Count>{node.getValue(_StoreKey.Count)}</Count>
           <Status status={node.getValue(_StoreKey.Status)} />
         </Label>
-        {node.children.map((item) => (
+        {node.children.map(item => (
           <TreeNode key={item.id} node={item} />
         ))}
       </Item>
@@ -229,7 +229,7 @@ function reducer(
   }
 ) {
   if (action.type === 'unregisterTree') {
-    return state.filter((item) => item !== action.payload)
+    return state.filter(item => item !== action.payload)
   }
   return [...state, action.payload]
 }
@@ -238,13 +238,17 @@ export const DevToolsContext = React.createContext<
   [IRootNode<any, any>[], React.Dispatch<Parameters<typeof reducer>[1]>] | []
 >([])
 
-export const DevTools = React.memo(({children}) => {
+export const DevTools = React.memo<{
+  trees?: IRootNode<any, any>[]
+  children: React.ReactNode
+}>(({children, trees: customTrees}) => {
   const [, setUpdate] = React.useState()
   const [selectedTreeId, setSelectedTreeId] = React.useState<
     string | undefined
   >()
-  const [trees, dispatch] = React.useReducer(reducer, [])
-  const selectedTree = trees.find((item) => item.id === selectedTreeId)
+  let [trees, dispatch] = React.useReducer(reducer, [])
+  trees = [...trees, ...(customTrees || [])]
+  const selectedTree = trees.find(item => item.id === selectedTreeId)
 
   React.useEffect(() => {
     const update = () => setUpdate({})
@@ -254,10 +258,11 @@ export const DevTools = React.memo(({children}) => {
       return
     }
 
-    selectedTree.onTick(update)
+    // FIXME: Find a better way to update
+    selectedTree.addEventListener('tickend', update)
 
     return () => {
-      selectedTree.removeEventListener('tick', update)
+      selectedTree.removeEventListener('tickend', update)
     }
   }, [selectedTree, trees])
 
@@ -266,7 +271,7 @@ export const DevTools = React.memo(({children}) => {
       <div className={styles.container}>
         <select
           className={styles.select}
-          onChange={(e) => {
+          onChange={e => {
             setSelectedTreeId(e.target.value)
           }}
         >
@@ -280,6 +285,12 @@ export const DevTools = React.memo(({children}) => {
         <div className={styles.list}>
           {selectedTree && <TreeNode node={selectedTree} />}
         </div>
+
+        {selectedTree && (
+          <pre className={styles.state}>
+            {JSON.stringify(selectedTree.state, null, 2)}
+          </pre>
+        )}
       </div>
       {children}
     </DevToolsContext.Provider>

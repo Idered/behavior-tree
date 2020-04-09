@@ -1,33 +1,41 @@
 import {createContext, useContext, useState, useEffect, useMemo} from 'react'
-import {IRootNode, tick, NodeStatus} from '@btree/core'
-
-export {DevTools} from './dev-tools'
+import {IRootNode, IOptions} from '@btree/core'
 import {DevToolsContext} from './dev-tools'
-export {createTreeStore, useTree}
 
-function useTree<T, Props>(tree: () => IRootNode<T, Props>, initialState: T) {
+function useTree<State, Props>(options: {
+  tree: (
+    initialState: State,
+    options: IOptions<Props | undefined>
+  ) => IRootNode<State, Props>
+  initialState: State
+}) {
   const [, dispatch] = useContext(DevToolsContext)
-  const [state, setState] = useState(initialState)
-  const memoTree = useMemo(() => tree(), [])
-  const memoTick = (props: Props) => tick(memoTree, state, {setState, props})
+  const [state, setState] = useState(options.initialState)
+  const memoTree = useMemo(() => options.tree(state, {setState}), [])
 
   useEffect(() => {
     dispatch?.({type: 'registerTree', payload: memoTree})
-    tick(memoTree, state, {setState, props: {}})
+    memoTree.tick()
 
     return () => {
       dispatch?.({type: 'unregisterTree', payload: memoTree})
     }
   }, [])
 
-  return [state, memoTick, memoTree] as [T, typeof memoTick, typeof memoTree]
+  return memoTree
 }
 
-function createTreeStore<State, Props>() {
-  const StoreContext = createContext<
-    [State, (props: Props) => NodeStatus | undefined] | null
-  >(null)
-  const useStore = () => useContext(StoreContext)
+function createTreeContext<State, Props>(
+  _behaviorTree: (
+    initialState: State,
+    options?: IOptions<Props>
+  ) => IRootNode<State, Props>
+) {
+  const TreeContext = createContext<IRootNode<State, Props> | null>(null)
+  const useTreeContext = () => useContext(TreeContext)
 
-  return {useStore, StoreContext}
+  return {useTreeContext, TreeContext}
 }
+
+export {DevTools} from './dev-tools'
+export {createTreeContext, useTree}

@@ -22,204 +22,187 @@ export const enum NodeType {
   State = 'State',
 }
 export const enum _StoreKey {
-  TickState = '$tickState',
   Patches = '$patches',
   SequenceIndex = '$sequenceIndex',
   Status = '$status',
   Count = '$count',
   WasRun = '$wasRun',
 }
-export interface INodeStore {
+export interface INodeState {
   [_StoreKey.Count]: number
   [_StoreKey.Status]: NodeStatus
 }
 export interface INodeTarget {
-  addEventListener: (type: 'tick', listener: () => void) => void
-  removeEventListener: (type: 'tick', listener: () => void) => void
+  addEventListener: (
+    type: 'tickstart' | 'tickend',
+    listener: () => void
+  ) => void
+  removeEventListener: (
+    type: 'tickstart' | 'tickend',
+    listener: () => void
+  ) => void
   dispatchEvent: (event: CustomEvent) => boolean
 }
-export interface IRootNode<T, Props> extends IWithStore, INodeTarget {
+export interface IRootNode<State, Props> extends IWithNodeState, INodeTarget {
   id: string
   name: string
   type: NodeType.Root
-  store: INodeStore
-  onTick: (cb: () => void) => void
-  children: ICompositeNode<T, Props>
+  state: State
+  children: ICompositeNode<State, Props>
+  tick: (props?: Props) => NodeStatus | undefined
 }
-export interface IConditionNode<T, Props> extends IWithStore {
+export interface IConditionNode<State, Props> extends IWithNodeState {
   id: string
   name: string
   type: NodeType.Condition
-  store: INodeStore
-  parent?: IAnyNode<T, Props>
+  parent?: IAnyNode<State, Props>
   exec(
-    args: {state: T; node: IConditionNode<T, Props>; root: IRootNode<T, Props>},
+    args: {
+      state: State
+      node: IConditionNode<State, Props>
+      root: IRootNode<State, Props>
+    },
     props: Props
   ): any
 }
-export interface IActionNode<T, Props> extends IWithStore {
+export interface IActionNode<State, Props> extends IWithNodeState {
   id: string
   name: string
   type: NodeType.Action
-  fn: (state: Draft<T>, props: Props) => void | Promise<void>
-  store: INodeStore
-  parent?: IAnyNode<T, Props>
+  fn: (state: Draft<State>, props: Props) => void | Promise<void>
+  parent?: IAnyNode<State, Props>
 }
-export interface IStateNode<T, Props> extends IWithStore {
+export interface IStateNode<State, Props> extends IWithNodeState {
   id: string
   type: NodeType.State
-  store: INodeStore
-  parent?: IAnyNode<T, Props>
-  children: IAnyChildNode<T, Props>
+  parent?: IAnyNode<State, Props>
+  children: IAnyChildNode<State, Props>
   state: any
 }
-export interface IPortalNode<T, Props> extends IWithStore {
+export interface IPortalNode<State, Props> extends IWithNodeState {
   id: string
   type: NodeType.Portal
-  store: INodeStore
-  parent?: IAnyNode<T, Props>
-  children: Array<ICompositeNode<T, Props>>
-  clear: () => IPortalNode<T, Props>
-  mount: (children: ICompositeNode<T, Props>) => IPortalNode<T, Props>
-  unmount: (children: ICompositeNode<T, Props>) => IPortalNode<T, Props>
+  parent?: IAnyNode<State, Props>
+  children: Array<ICompositeNode<State, Props>>
+  clear: () => IPortalNode<State, Props>
+  mount: (children: ICompositeNode<State, Props>) => IPortalNode<State, Props>
+  unmount: (children: ICompositeNode<State, Props>) => IPortalNode<State, Props>
 }
-export interface ISequenceNode<T, Props> extends IWithStore {
+export interface ISequenceNode<State, Props> extends IWithNodeState {
   id: string
   type: NodeType.Sequence
-  store: INodeStore
-  parent?: IAnyNode<T, Props>
-  children: Array<ICompositeNode<T, Props> | ILeafNode<T, Props>>
+  parent?: IAnyNode<State, Props>
+  children: Array<ICompositeNode<State, Props> | ILeafNode<State, Props>>
 }
-export interface IParallelNode<T, Props> extends IWithStore {
+export interface IParallelNode<State, Props> extends IWithNodeState {
   id: string
   type: NodeType.Parallel
-  store: INodeStore
-  parent?: IAnyNode<T, Props>
-  children: Array<ICompositeNode<T, Props> | IActionNode<T, Props>>
+  parent?: IAnyNode<State, Props>
+  children: Array<ICompositeNode<State, Props> | IActionNode<State, Props>>
 }
-export interface ISelectorNode<T, Props> extends IWithStore {
+export interface ISelectorNode<State, Props> extends IWithNodeState {
   id: string
   type: NodeType.Selector
-  store: INodeStore
-  parent?: IAnyNode<T, Props>
-  children: Array<ICompositeNode<T, Props> | IActionNode<T, Props>>
+  parent?: IAnyNode<State, Props>
+  children: Array<ICompositeNode<State, Props> | IActionNode<State, Props>>
 }
-export interface IDecoratorNode<T, Props> extends IWithStore {
+export interface IDecoratorNode<State, Props> extends IWithNodeState {
   id: string
   type: NodeType.Decorator
-  store: INodeStore
-  parent?: IAnyNode<T, Props>
+  parent?: IAnyNode<State, Props>
   decorator: (status: NodeStatus) => NodeStatus
-  children: ILeafNode<T, Props>
+  children: ILeafNode<State, Props>
 }
-export interface IInvertNode<T, Props> extends IWithStore {
+export interface IInvertNode<State, Props> extends IWithNodeState {
   id: string
   type: NodeType.Invert
-  store: INodeStore
-  parent?: IAnyNode<T, Props>
-  children: IAnyChildNode<T, Props>
+  parent?: IAnyNode<State, Props>
+  children: IAnyChildNode<State, Props>
 }
-export type ICompositeNode<T, Props> =
-  | ISelectorNode<T, Props>
-  | ISequenceNode<T, Props>
-  | IParallelNode<T, Props>
-  | IDecoratorNode<T, Props>
-  | IInvertNode<T, Props>
-  | IPortalNode<T, Props>
-  | IStateNode<T, Props>
-export type ILeafNode<T, Props> =
-  | IActionNode<T, Props>
-  | IConditionNode<T, Props>
-export type IAnyChildNode<T, Props> =
-  | ICompositeNode<T, Props>
-  | ILeafNode<T, Props>
-export type IAnyNode<T, Props> = IRootNode<T, Props> | IAnyChildNode<T, Props>
-export type IStore = ReturnType<typeof _createStore>
-export interface IWithStore {
+export type ICompositeNode<State, Props> =
+  | ISelectorNode<State, Props>
+  | ISequenceNode<State, Props>
+  | IParallelNode<State, Props>
+  | IDecoratorNode<State, Props>
+  | IInvertNode<State, Props>
+  | IPortalNode<State, Props>
+  | IStateNode<State, Props>
+export type ILeafNode<State, Props> =
+  | IActionNode<State, Props>
+  | IConditionNode<State, Props>
+export type IAnyChildNode<State, Props> =
+  | ICompositeNode<State, Props>
+  | ILeafNode<State, Props>
+export type IAnyNode<State, Props> =
+  | IRootNode<State, Props>
+  | IAnyChildNode<State, Props>
+export interface IWithNodeState {
+  $nodeState: INodeState
   /**
-   * Get value form node store
+   * Get value form node state
    */
   getValue: <T>(key: string, defaultValue?: T) => T
   /**
-   * Set value in node store
+   * Set value in node state
    */
   setValue: (key: string, value: any) => any
-  /**
-   * Update execution counter
-   */
-  bump: () => void
 }
 
-export function tick<T, Props>(
-  root: IRootNode<T, Props>,
-  state: T,
-  options: {
-    props: Props | {}
-    setState: any
-  } = {
-    props: {},
-    setState: () => {},
-  }
-): NodeStatus | undefined {
-  if (root.type !== NodeType.Root) {
-    throw new Error('Use tick on root node.')
-  }
-
-  if (typeof window === 'undefined') {
-    return undefined
-  }
-  root.setValue(
-    _StoreKey.TickState,
-    root.getValue(_StoreKey.TickState) || state
-  )
-  const result = _interpret(root.children, root, options)
-  const currentTickState = root.getValue(_StoreKey.TickState)
-  options.setState(currentTickState)
-  _resetFinalStates(root.children, root)
-  root.dispatchEvent(new CustomEvent('tick'))
-
-  return result
-}
-
-export function rafTick<T, Props>(node: IRootNode<T, Props>, state: T) {
-  if (typeof window === 'undefined') {
-    return
-  }
-
-  if (!window.requestAnimationFrame) {
-    throw new Error(`Browser doesn't support requestAnimationFrame`)
-  }
-
-  window.requestAnimationFrame(() => {
-    tick(node, state)
-    rafTick(node, state)
-  })
+export type IOptions<Props> = {
+  props?: Props
+  setState: any
 }
 
 export const nodes = {
-  root: function <T, Props>(
+  root: function<State, Props>(
     name: string,
-    children: () => ICompositeNode<T, Props>
-  ): () => IRootNode<T, Props> {
-    return () => {
+    childrenFactory: () => ICompositeNode<State, Props>
+  ) {
+    return (
+      initialState: State,
+      options: IOptions<Props> = {
+        props: {} as Props,
+        setState: () => {},
+      }
+    ): IRootNode<State, Props> => {
       const registrations: {
         [key: string]: Array<(event: CustomEvent) => void>
       } = {}
-      const getListeners = function (type: string) {
+      const getListeners = function(type: string) {
         if (!(type in registrations)) registrations[type] = []
         return registrations[type]
       }
-      return {
+      const root: IRootNode<State, Props> = {
         id: nanoid(),
         name,
         type: NodeType.Root,
-        children: children(),
-        addEventListener: (type: 'tick', listener: () => void) => {
+        children: childrenFactory(),
+        state: initialState,
+        tick: function tick(props?: Props) {
+          if (typeof window === 'undefined') {
+            return undefined
+          }
+          this.dispatchEvent(new CustomEvent('tickstart'))
+          const nodeStatus = _interpret(this.children, this, {
+            ...options,
+            props,
+          })
+          _resetFinalStates(this.children, this)
+          this.dispatchEvent(new CustomEvent('tickend'))
+          return nodeStatus
+        },
+        addEventListener: (
+          type: 'tickstart' | 'tickend',
+          listener: () => void
+        ) => {
           const listeners = getListeners(type)
           const index = listeners.indexOf(listener)
           if (index === -1) registrations[type].push(listener)
         },
-        removeEventListener: (type: 'tick', listener: () => void) => {
+        removeEventListener: (
+          type: 'tickstart' | 'tickend',
+          listener: () => void
+        ) => {
           const listeners = getListeners(type)
           const index = listeners.indexOf(listener)
           if (index !== -1) registrations[type].splice(index, 1)
@@ -230,37 +213,39 @@ export const nodes = {
             listeners[i].call(this, event)
           return !event.defaultPrevented
         },
-        onTick: function (cb: () => void) {
-          this.addEventListener('tick', cb)
-        },
-        ..._createStore(),
+        ...createNodeState(),
       }
+      root.addEventListener = root.addEventListener.bind(root)
+      root.removeEventListener = root.removeEventListener.bind(root)
+      root.dispatchEvent = root.dispatchEvent.bind(root)
+      root.tick = root.tick.bind(root)
+      return root
     }
   },
   /**
    * Runs child nodes in sequence until it finds one that succeeds. Succeeds when it finds the first child that succeeds. For child nodes that fail, it moves forward to the next child node. While a child is running it stays on that child node without moving forward.
    */
-  selector: function <T, Props>(
-    children: Array<ICompositeNode<T, Props> | IActionNode<T, Props>>
-  ): ISelectorNode<T, Props> {
+  selector: function<State, Props>(
+    children: Array<ICompositeNode<State, Props> | IActionNode<State, Props>>
+  ): ISelectorNode<State, Props> {
     return {
       id: nanoid(),
       type: NodeType.Selector,
       children,
-      ..._createStore(),
+      ...createNodeState(),
     }
   },
   /**
    * Runs each child node one by one. Fails for the first child node that fails. Moves to the next child when the current running child succeeds. Stays on the current child node while it returns running. Succeeds when all child nodes have succeeded.
    */
-  sequence: function <T, Props>(
-    children: Array<ICompositeNode<T, Props> | ILeafNode<T, Props>>
-  ): ISequenceNode<T, Props> {
+  sequence: function<State, Props>(
+    children: Array<ICompositeNode<State, Props> | ILeafNode<State, Props>>
+  ): ISequenceNode<State, Props> {
     return {
       id: nanoid(),
       type: NodeType.Sequence,
       children,
-      ..._createStore({
+      ...createNodeState({
         [_StoreKey.SequenceIndex]: 0,
       }),
     }
@@ -268,20 +253,20 @@ export const nodes = {
   /**
    * Runs all child nodes in parallel. Continues to run until a required number of child nodes have either failed or succeeded.
    */
-  parallel: function <T, Props>(
-    children: Array<ICompositeNode<T, Props> | IActionNode<T, Props>>
-  ): IParallelNode<T, Props> {
+  parallel: function<State, Props>(
+    children: Array<ICompositeNode<State, Props> | IActionNode<State, Props>>
+  ): IParallelNode<State, Props> {
     return {
       id: nanoid(),
       type: NodeType.Parallel,
       children,
-      ..._createStore(),
+      ...createNodeState(),
     }
   },
-  condition: function <T, Props>(
+  condition: function<State, Props>(
     name: string,
-    fn?: (state: T, props: Props) => void
-  ): IConditionNode<T, Props> {
+    fn?: (state: State, props: Props) => void
+  ): IConditionNode<State, Props> {
     return {
       id: nanoid(),
       name,
@@ -293,77 +278,76 @@ export const nodes = {
           return true
         }
       },
-      ..._createStore(),
+      ...createNodeState(),
     }
   },
-  portal: function <T, Props>(): IPortalNode<T, Props> {
+  portal: function<State, Props>(): IPortalNode<State, Props> {
     return {
       id: nanoid(),
       type: NodeType.Portal,
       children: [],
-      ..._createStore(),
-      clear: function () {
+      ...createNodeState(),
+      clear: function() {
         this.children.splice(0, this.children.length)
         return this
       },
-      mount: function (children: ICompositeNode<T, Props>) {
-        if (this.children.find((item) => item.id === children.id)) return this
+      mount: function(children: ICompositeNode<State, Props>) {
+        if (this.children.find(item => item.id === children.id)) return this
         this.children.push(children)
         return this
       },
-      unmount: function (children: ICompositeNode<T, Props>) {
-        const index = this.children.findIndex((item) => item.id === children.id)
+      unmount: function(children: ICompositeNode<State, Props>) {
+        const index = this.children.findIndex(item => item.id === children.id)
         this.children.splice(index, 1)
         return this
       },
     }
   },
-  state: function <T, Props>(
+  state: function<State, Props>(
     state: any,
-    children: IAnyChildNode<T, Props>
-  ): IStateNode<T, Props> {
+    children: IAnyChildNode<State, Props>
+  ): IStateNode<State, Props> {
     return {
       id: nanoid(),
       type: NodeType.State,
       children,
       state,
-      ..._createStore(),
+      ...createNodeState(),
     }
   },
-  invert: function <T, Props>(
-    children: IAnyChildNode<T, Props>
-  ): IInvertNode<T, Props> {
+  invert: function<State, Props>(
+    children: IAnyChildNode<State, Props>
+  ): IInvertNode<State, Props> {
     return {
       id: nanoid(),
       type: NodeType.Invert,
       children,
-      ..._createStore(),
+      ...createNodeState(),
     }
   },
-  action: function <T, Props>(
+  action: function<State, Props>(
     name: string,
-    fn: (state: Draft<T>, props: Props) => void
-  ): IActionNode<T, Props> {
+    fn: (state: Draft<State>, props: Props) => void
+  ): IActionNode<State, Props> {
     return {
       id: nanoid(),
       name,
       type: NodeType.Action,
       fn,
-      ..._createStore(),
+      ...createNodeState(),
     }
   },
 }
 
-export function _resetFinalStates<T, Props>(
-  node: IAnyNode<T, Props>,
-  root: IRootNode<T, Props>
+function _resetFinalStates<State, Props>(
+  node: IAnyNode<State, Props>,
+  root: IRootNode<State, Props>
 ) {
   switch (node.type) {
     case NodeType.Action:
       if (!node.getValue(_StoreKey.WasRun)) {
         node.setValue(_StoreKey.Status, NodeStatus.Ready)
       }
-      // TODO: Clean up finished actions
       break
     case NodeType.Portal:
     case NodeType.Invert:
@@ -376,7 +360,7 @@ export function _resetFinalStates<T, Props>(
         ? node.children
         : [node.children]
       const hasRunningChildren = children.some(
-        (item) => item.getValue(_StoreKey.Status) === NodeStatus.Running
+        item => item.getValue(_StoreKey.Status) === NodeStatus.Running
       )
       const isSequence = node.type === NodeType.Sequence
       const hasSequenceFinished = isSequence
@@ -391,7 +375,7 @@ export function _resetFinalStates<T, Props>(
           node.setValue(_StoreKey.SequenceIndex, 0)
         }
 
-        children.forEach((item) => {
+        children.forEach(item => {
           item.setValue(_StoreKey.Status, NodeStatus.Ready)
         })
       }
@@ -408,18 +392,15 @@ export function _resetFinalStates<T, Props>(
   node.setValue(_StoreKey.WasRun, false)
 }
 
-function _interpret<T, Props extends Record<string, any>>(
-  node: IAnyNode<T, Props>,
-  root: IRootNode<T, Props>,
-  options: {
-    props: Props
-    setState: any
-  } = {
+function _interpret<State, Props>(
+  node: IAnyNode<State, Props>,
+  root: IRootNode<State, Props>,
+  options: IOptions<Props> = {
     props: {} as Props,
     setState: () => {},
   }
 ): NodeStatus {
-  const state = root.getValue<T>(_StoreKey.TickState)
+  const {state} = root
   node.setValue(_StoreKey.WasRun, true)
 
   switch (node.type) {
@@ -437,10 +418,9 @@ function _interpret<T, Props extends Record<string, any>>(
           // Reset patches array
           node.setValue(_StoreKey.Patches, undefined)
           node.setValue(_StoreKey.Status, NodeStatus.Success)
-
-          root.setValue(_StoreKey.TickState, nextState)
-          // Trigger tree tick with new state
-          tick(root, nextState)
+          root.state = nextState
+          options.setState?.(nextState)
+          root.tick(options.props)
 
           return NodeStatus.Success
         }
@@ -448,21 +428,21 @@ function _interpret<T, Props extends Record<string, any>>(
         return status
       }
 
-      node.bump()
+      bump(node)
 
-      const result = produce(
+      const nextState = produce(
         state,
-        (draft) => node.fn(draft, options.props),
-        (patches) => {
+        draft => node.fn(draft, options.props || ({} as Props)),
+        patches => {
           node.setValue(_StoreKey.Patches, patches)
 
-          if (isPromise(result)) {
-            tick(root, state, options)
+          if (isPromise(nextState)) {
+            root.tick()
           }
         }
       )
 
-      if (isPromise(result)) {
+      if (isPromise(nextState)) {
         node.setValue(_StoreKey.Status, NodeStatus.Running)
 
         return NodeStatus.Running
@@ -470,35 +450,13 @@ function _interpret<T, Props extends Record<string, any>>(
 
       // TODO: Handle errors(failure status)
 
-      // if (maybePromise && typeof maybePromise.then === 'function') {
-      //   node.setValue(_StoreKey.Status, NodeStatus.Running)
-
-      //   maybePromise.then(
-      //     (nextState) => {
-      //       options.setState(nextState)
-      //       node.setValue(_StoreKey.Status, NodeStatus.Success)
-      //       tick(root, nextState)
-      //     },
-      //     (err) => {
-      //       node.setValue(_StoreKey.Status, NodeStatus.Failure)
-      //       tick(root, state)
-      //       throw err
-      //     }
-      //   )
-
-      //   node.setValue(_StoreKey.Status, NodeStatus.Running)
-      //   return NodeStatus.Running
-      // } else {
-      //   // tick(root, result)
-      //   options.setState(result)
-      // }
-
-      root.setValue(_StoreKey.TickState, result)
+      root.state = nextState as State
+      options.setState?.(nextState)
       node.setValue(_StoreKey.Status, NodeStatus.Success)
       return NodeStatus.Success
     }
     case NodeType.Condition: {
-      node.bump()
+      bump(node)
       node.setValue(_StoreKey.Status, NodeStatus.Running)
       if (
         node.exec(
@@ -507,7 +465,7 @@ function _interpret<T, Props extends Record<string, any>>(
             node,
             root,
           },
-          options.props || {}
+          options.props || ({} as Props)
         )
       ) {
         node.setValue(_StoreKey.Status, NodeStatus.Success)
@@ -518,7 +476,7 @@ function _interpret<T, Props extends Record<string, any>>(
       }
     }
     case NodeType.Invert: {
-      node.bump()
+      bump(node)
       node.setValue(_StoreKey.Status, NodeStatus.Running)
       const status = _interpret(node.children, root, options)
       if (status === NodeStatus.Failure) {
@@ -532,16 +490,16 @@ function _interpret<T, Props extends Record<string, any>>(
       return status
     }
     case NodeType.State: {
-      node.bump()
+      bump(node)
       return _interpret(node.children, root, options)
     }
     case NodeType.Decorator: {
-      node.bump()
+      bump(node)
       return node.decorator(_interpret(node.children, root, options))
     }
     case NodeType.Portal:
     case NodeType.Parallel: {
-      node.bump()
+      bump(node)
       node.setValue(_StoreKey.Status, NodeStatus.Running)
       let states = []
 
@@ -550,10 +508,10 @@ function _interpret<T, Props extends Record<string, any>>(
         states[i] = _interpret(node.children[i], root, options)
       }
       // TODO: Make this a prop
-      const nSuccess = states.filter((status) => status === NodeStatus.Success)
+      const nSuccess = states.filter(status => status === NodeStatus.Success)
         .length
       // TODO: Make this a prop
-      const nFailure = states.filter((status) => status === NodeStatus.Failure)
+      const nFailure = states.filter(status => status === NodeStatus.Failure)
         .length
 
       if (nSuccess === node.children.length) {
@@ -567,7 +525,7 @@ function _interpret<T, Props extends Record<string, any>>(
       return NodeStatus.Running
     }
     case NodeType.Sequence: {
-      node.bump()
+      bump(node)
       node.setValue(_StoreKey.Status, NodeStatus.Running)
       let index = node.getValue<number>(_StoreKey.SequenceIndex, 0)
       while (index < node.children.length) {
@@ -592,7 +550,7 @@ function _interpret<T, Props extends Record<string, any>>(
       return NodeStatus.Success
     }
     case NodeType.Selector: {
-      node.bump()
+      bump(node)
       node.setValue(_StoreKey.Status, NodeStatus.Running)
 
       for (const child of node.children) {
@@ -611,26 +569,29 @@ function _interpret<T, Props extends Record<string, any>>(
   }
 }
 
-export function _createStore(customState?: any) {
+function bump(node: IAnyNode<any, any>) {
+  const currentValue = node.getValue<number>(_StoreKey.Count, 0)
+  node.setValue(_StoreKey.Count, currentValue + 1)
+}
+
+function createNodeState(customState?: any) {
   return {
-    store: {
+    $nodeState: {
       [_StoreKey.Count]: 0,
       [_StoreKey.WasRun]: false,
       [_StoreKey.Status]: NodeStatus.Ready,
       ...customState,
     },
-    bump() {
-      const currentValue = this.getValue<number>(_StoreKey.Count, 0)
-      this.setValue(_StoreKey.Count, currentValue + 1)
-    },
     setValue(key: string, value: any) {
-      this.store[key] = value
+      this['$nodeState'][key] = value
     },
     getValue<Value>(key: string, defaultValue?: any): Value {
-      if (this.store === undefined) {
+      if (this['$nodeState'] === undefined) {
         return defaultValue === undefined ? undefined : defaultValue
       }
-      return this.store[key] === undefined ? defaultValue : this.store[key]
+      return this['$nodeState'][key] === undefined
+        ? defaultValue
+        : this['$nodeState'][key]
     },
   }
 }

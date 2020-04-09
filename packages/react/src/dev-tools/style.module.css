@@ -16,7 +16,7 @@
   letter-spacing: 0.12px;
   min-width: 300px;
   z-index: 1000;
-  box-shadow: inset 2px 0 0 #a1aed6;
+  border-left: 2px solid #a1aed6;
 }
 .select {
   margin: 12px 12px 8px;
@@ -95,4 +95,10 @@
 }
 .labelIconState {
   color: #4e6184;
+}
+.state {
+  padding: 8px;
+  margin: 8px 0 0 0;
+  background: #fff;
+  border-top: 1px solid #a1aed6;
 }
