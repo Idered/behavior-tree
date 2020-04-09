@@ -24,7 +24,6 @@
     "paths": {
       "*": ["src/*", "node_modules/*"]
     },
-    "jsx": "react",
-    "esModuleInterop": true
+    "jsx": "react"
   }
 }
