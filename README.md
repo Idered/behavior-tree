@@ -30,7 +30,7 @@ const AuthBehavior = nodes.root('Auth behavior', () =>
     /* Sequence runs child one by one and stops if any child return failure status */
     nodes.sequence([
       /* Condition node run logic checks on current state */
-      nodes.condition('Is logged in', (state, props) => state.isLoggedIn)
+      nodes.condition('Is logged in', (state, props) => state.isLoggedIn),
       /* Action node is used for side effects and state modifications */
       nodes.action('Redirect to dashboard', (state, props) => {
         navigate('/dashboard')
