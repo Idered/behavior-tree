@@ -59,6 +59,8 @@ const App = () => {
 Component used to visualize BehaviorTree.
 
 ```tsx
+import {DevTools} from '@btree/react'
+
 const App = () => (
   <DevTools>
     <YourPage />
@@ -69,6 +71,8 @@ const App = () => (
 Or if you want to use `useTree` in App component:
 
 ```tsx
+import {DevTools} from '@btree/react'
+
 const App = () => {
   const tree = useTree({tree: AppBehavior})
 
@@ -85,6 +89,9 @@ const App = () => {
 Function used to create React Context for given tree.
 
 ```tsx
+import {nodes} from '@btree/core'
+import {createTreeContext, useTree} from '@btree/react'
+
 const AppBehavior = nodes.root('AppBehavior', () =>
   nodes.selector([
     // ...
