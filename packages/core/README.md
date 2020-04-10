@@ -40,7 +40,7 @@ helloTree.tick({role: 'admin'}) // => Hello boss
 
 ### `nodes.root(name, () => children)`
 
-Creates a new Behavior Tree.
+Creates a new Behavior Tree. It takes a name of the tree and a function that return any of children nodes eg. selector, sequence etc.
 
 ```tsx
 const AppBehavior = nodes.root('AppBehavior', () =>
@@ -50,15 +50,38 @@ const AppBehavior = nodes.root('AppBehavior', () =>
 )
 ```
 
-### `nodes.sequence([children])`
+### `nodes.sequence([children, children, ...])`
 
-Runs each child node one by one. Returns failure for the first child node that fails. Moves to the next child when the currently running child succeeds. Stays on the current child node while it returns running(async operation) status. Succeeds when all child nodes have succeeded.
+Sequence is an AND, requiring all children to succeed. It will visit each child in order, starting with the first, and when that succeeds, it will go to next one. If any child fails it will immediately return failure to the parent. If the last child in the sequence succeeds, then the sequence will return success ot its parent.
 
-### `nodes.selector([children])`
+The following example will:
+1. Check if user is logged in
+2. If user is not logged in - it will do nothing
+3. If user is logged in - it will add item to cart
 
-Runs child nodes one by one until it finds one that succeeds. Return success status when it finds the child that succeeds, stops execution at that time. For child nodes that fail, it moves forward to the next child node. While a child is running(async operation) it stays on that child node without moving forward.
+```tsx
+nodes.sequence([
+  nodes.condition('Ensure user is logged in', () => /* ... */),
+  nodes.action('Add item to cart', () => /* ... */)
+])
+```
 
-### `nodes.parallel([children])`
+### `nodes.selector([children, children, ...])`
+
+Selector is an OR, requiring at least one children to succeed. It will run each child in order, starting with the first, if it fails, it will run the next one, until it finds one that succeeds an returns it to the parent. Selector will fail if all children returns failure.
+
+The following example will:
+1. Fetch featured posts
+2. If fetching featured posts fail, it will get recent posts
+
+```tsx
+nodes.selector([
+  nodes.action('Get featured posts', () => /* ... */),
+  nodes.action('Get recent posts', () => /* ... */)
+])
+```
+
+### `nodes.parallel([children, children, ...])`
 
 Runs all child nodes in parallel. Continues to run until a all children nodes have either failed or succeeded.
 
