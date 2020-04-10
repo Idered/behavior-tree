@@ -1,6 +1,6 @@
 ![](art/banner.png)
 
-JavaScript/TypeScript implementation of [Behavior Trees](https://en.wikipedia.org/wiki/Behavior_tree).
+JavaScript/TypeScript implementation of [Behavior Trees](https://en.wikipedia.org/wiki/Behavior_tree_(artificial_intelligence,_robotics_and_control)).
 
 📕 [Read the documentation](packages/core/README.md) to learn the API.
 
