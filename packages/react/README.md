@@ -37,7 +37,7 @@ const initialState = {
 }
 
 const App = () => {
-  const {state} = useTree({tree, initialState})
+  const {state, tick} = useTree({tree, initialState})
 
   return (
     <div>
