@@ -1,11 +1,11 @@
 import {nodes} from '@btree/core'
 
-type TreeProps = {
+type Props = {
   targetEvent?: React.MouseEvent<HTMLDivElement, MouseEvent>
   containerEvent?: MouseEvent
 }
 
-type TreeState = {
+type State = {
   isDragging: boolean
   x: number
   y: number
@@ -13,7 +13,7 @@ type TreeState = {
   dy: number
 }
 
-const DragBehavior = nodes.root<TreeState, TreeProps>('DragBehavior', () =>
+const DragBehavior = nodes.root<State, Props>('DragBehavior', () =>
   nodes.selector([
     nodes.sequence([
       nodes.condition('Is dragging', (state, props) => {

@@ -69,7 +69,7 @@ export interface IActionNode<State, Props> extends IWithNodeState {
   id: string
   name: string
   type: NodeType.Action
-  fn: (state: Draft<State>, props: Props) => void | Promise<void>
+  fn: (state: State, props: Props) => void | Promise<void>
   parent?: IAnyNode<State, Props>
 }
 export interface IStateNode<State, Props> extends IWithNodeState {
@@ -92,19 +92,19 @@ export interface ISequenceNode<State, Props> extends IWithNodeState {
   id: string
   type: NodeType.Sequence
   parent?: IAnyNode<State, Props>
-  children: Array<ICompositeNode<State, Props> | ILeafNode<State, Props>>
+  children: IAnyChildNode<State, Props>[]
 }
 export interface IParallelNode<State, Props> extends IWithNodeState {
   id: string
   type: NodeType.Parallel
   parent?: IAnyNode<State, Props>
-  children: Array<ICompositeNode<State, Props> | IActionNode<State, Props>>
+  children: IAnyChildNode<State, Props>[]
 }
 export interface ISelectorNode<State, Props> extends IWithNodeState {
   id: string
   type: NodeType.Selector
   parent?: IAnyNode<State, Props>
-  children: Array<ICompositeNode<State, Props> | IActionNode<State, Props>>
+  children: IAnyChildNode<State, Props>[]
 }
 export interface IDecoratorNode<State, Props> extends IWithNodeState {
   id: string
@@ -147,7 +147,6 @@ export interface IWithNodeState {
    */
   setValue: (key: string, value: any) => any
 }
-
 export type IOptions<Props> = {
   props?: Props
   setState: any
@@ -226,7 +225,7 @@ export const nodes = {
    * Runs child nodes in sequence until it finds one that succeeds. Succeeds when it finds the first child that succeeds. For child nodes that fail, it moves forward to the next child node. While a child is running it stays on that child node without moving forward.
    */
   selector: function<State, Props>(
-    children: Array<ICompositeNode<State, Props> | IActionNode<State, Props>>
+    children: IAnyChildNode<State, Props>[]
   ): ISelectorNode<State, Props> {
     return {
       id: nanoid(),
@@ -239,7 +238,7 @@ export const nodes = {
    * Runs each child node one by one. Fails for the first child node that fails. Moves to the next child when the current running child succeeds. Stays on the current child node while it returns running. Succeeds when all child nodes have succeeded.
    */
   sequence: function<State, Props>(
-    children: Array<ICompositeNode<State, Props> | ILeafNode<State, Props>>
+    children: IAnyChildNode<State, Props>[]
   ): ISequenceNode<State, Props> {
     return {
       id: nanoid(),
@@ -254,7 +253,7 @@ export const nodes = {
    * Runs all child nodes in parallel. Continues to run until a required number of child nodes have either failed or succeeded.
    */
   parallel: function<State, Props>(
-    children: Array<ICompositeNode<State, Props> | IActionNode<State, Props>>
+    children: IAnyChildNode<State, Props>[]
   ): IParallelNode<State, Props> {
     return {
       id: nanoid(),
@@ -265,7 +264,7 @@ export const nodes = {
   },
   condition: function<State, Props>(
     name: string,
-    fn?: (state: State, props: Props) => void
+    fn?: (state: State, props: Props) => any
   ): IConditionNode<State, Props> {
     return {
       id: nanoid(),
@@ -327,7 +326,7 @@ export const nodes = {
   },
   action: function<State, Props>(
     name: string,
-    fn: (state: Draft<State>, props: Props) => void
+    fn: (state: State, props: Props) => void
   ): IActionNode<State, Props> {
     return {
       id: nanoid(),
@@ -432,7 +431,7 @@ function _interpret<State, Props>(
 
       const nextState = produce(
         state,
-        draft => node.fn(draft, options.props || ({} as Props)),
+        draft => node.fn(draft as State, options.props || ({} as Props)),
         patches => {
           node.setValue(_StoreKey.Patches, patches)
 
