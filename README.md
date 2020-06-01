@@ -4,6 +4,8 @@ JavaScript/TypeScript implementation of [Behavior Trees](https://en.wikipedia.or
 
 📕 [Read the documentation](packages/core/README.md) to learn the API.
 
+[![Gitter](https://badges.gitter.im/behavior_tree/community.svg)](https://gitter.im/behavior_tree/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+
 > **Note**: This software is in early development stage. It's not production ready. API may change.
 
 ## Behavior Tree Toolkit
