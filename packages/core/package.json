@@ -27,7 +27,7 @@
   },
   "dependencies": {
     "@types/nanoid": "^2.1.0",
-    "immer": "^6.0.3",
+    "immer": "^8.0.1",
     "nanoid": "^2.0.0"
   }
 }
